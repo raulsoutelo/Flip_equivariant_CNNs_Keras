@@ -15,21 +15,29 @@ In order to test the usefulness of this modified convolutional layer I have take
 In the symmetric convolutional layer there is some weight sharing between the filters of the same layer. I have increased the number of filters in the symmetric version to have approximately the same number of trainable parameters.
 
 For the resnet model (cifar10_resnet.py), the results are:
+
 Test loss: 0.432
+
 Test accuracy: 0.918
 
 and with the new implementation (cifar10_resnet_modified.py):
+
 Test loss: 0.456
+
 Test accuracy: 0.908
 
 so there is a small decrease in performance.
 
 For the convolutional model (cifar10_CNN.py), the results are:
+
 Test loss: 0.845
+
 Test accuracy: 0.731
 
 and with the new implementation (cifar10_CNN_modified.py):
+
 Test loss: 0.733
+
 Test accuracy: 0.765
 
 which shows a considerable increase in performance.
@@ -39,6 +47,7 @@ Further experiments are needed to understand why it is helpful in one model but 
 # RUNNING THE CODE
 
 The python version used is:
+
 Python 3.5.2
 
 Run the following command to install the dependencies
