@@ -1,54 +1,29 @@
-In this project I have taken the implementation of a 2D convolutional layer in Keras (Conv2D class) and modified it to create a new version (Conv2D_HF). In this new version half of the kernels are a horizontal flipped version of the other half. This is motivated by the belief that for natural images, if there is one filter that detects one feature (e.g. a '<' shape) there should be another filter that detects the same shape but horizontally flipped ('>').
+In this repository I have taken the implementation of a 2D convolutional layer in Keras (Conv2D class) and modified it to create two new versions:
+1) Conv2D_HF: CNN layer that is equivariant to the horizontal flip transformation in the input space.
+2) Conv2D_HF: CNN layer that is equivariant to transformation 'g' in the input space. 'g' is the transformation in the output space of function Conv2D_HF when applying horizontal flip at its input. Therefore, stacking first a Conv2D_HF layer and then a Conv2D_HF2 layers makes the two layers together equivariant to horizontal flip in input space.
+If more Conv2D_HF2 layers are stacked on top of the two, the whole network is still equivariant to horizontal flip in input space.
 
 # EQUIVARIANCE
 
-Equivariance is an active area of research in Machine Learning. A function F is equivariant to a transformation T if for an input x, the output of F(x) is a transformation of the output of the transformed input F(T(x)). The symmetric convolutional layer implemented in this project is equivariant to horizontal flipping. By running the symmetric_convolutional_layer.py script you can verify this.
+Equivariance is an active area of research in Machine Learning. A function f is equivariant to transformation g_0 if there exist g_1 such that f(g_0(x)) = g_1(f(x)).
+
+Equivariance is a desired property to have in neural networks. It is a good inductive bias to put in the network. Some works show that neural nets learn functions that are equivariant. This is motivated by the fact that similar inputs should be processed in a similar manner. Enforcing this property makes the network more efficient and less prune to overfitting due to weight sharing.
+
+By running the scripts keras/Horflip_equivariant_CNN_firstlayer.py and keras/Horflip_equivariant_CNN_secondlayer.py you can validate these layer are equivariant to the previously described transformations.
 
 # EXPERIMENTS
 
-In order to test the usefulness of this modified convolutional layer I have taken a couple of models trained in cifar10 from the keras github website (https://github.com/keras-team/keras/tree/master/examples) and replaced the convolutional layers with this new implemention. The scripts that run these experiments are the following ones:
-1) cifar10_resnet.py
-2) cifar10_CNN.py
-3) cifar10_resnet_modified.py
-4) cifar10_CNN_modified.py
+In order to test the usefullness of this property I have taken a simple CNN model achieving 70% in Cifar 10 and replace some of the convolutional layer with these new CNN layers. Due to weight sharing, for a similar size of the feature vectors in each layer, the number of params for these new CNN layers is smaller.
 
-In the symmetric convolutional layer there is some weight sharing between the filters of the same layer. I have increased the number of filters in the symmetric version to have approximately the same number of trainable parameters.
+This experiment has been implemented (and the results shown) in keras/equivariance_experiments_keras.ipynb.
 
-For the resnet model (cifar10_resnet.py), the results are:
-
-Test loss: 0.432
-
-Test accuracy: 0.918
-
-and with the new implementation (cifar10_resnet_modified.py):
-
-Test loss: 0.456
-
-Test accuracy: 0.908
-
-so there is a small decrease in performance.
-
-For the convolutional model (cifar10_CNN.py), the results are:
-
-Test loss: 0.845
-
-Test accuracy: 0.731
-
-and with the new implementation (cifar10_CNN_modified.py):
-
-Test loss: 0.733
-
-Test accuracy: 0.765
-
-which shows a considerable increase in performance.
-
-Further experiments are needed to understand why it is helpful in one model but not the other. Maybe in the resnet model, the filters do not actually learn the same features but flipped. Also the optimization may be an issue since now the number of paths through the same weights has been duplicated. This modifies the variance of the gradiant updates and tuning the learning_rate/batch_size may be beneficial.
+The results show that substituing the first layer for a equivariant one does help by boosting the accuracy of the model around 1%. On the other hand substituing the remaining CNN layers by equivariant ones decreases the accuracy of the model.
 
 # RUNNING THE CODE
 
 The python version used is:
 
-Python 3.5.2
+Python 3.7.4
 
 Run the following command to install the dependencies
 
